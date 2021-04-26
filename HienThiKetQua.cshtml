@@ -1,0 +1,118 @@
+﻿@using System.Data
+@{
+    Layout = null;
+}
+@{
+    DataTable tbDiem = Model != null ? Model as DataTable : new DataTable();
+    string Namhoc = string.Empty, Hocky = string.Empty;
+    string MaMau = string.Empty;
+    decimal STCDau = 0, STCRot = 0;
+    /////////////////////////////
+    DataTable tbTrungBinh = ViewBag.tbTrungBinh != null ? ViewBag.tbTrungBinh : new DataTable();
+    DataTable tbDiemRenLuyen = ViewBag.tbDiemRenLuyen != null ? ViewBag.tbDiemRenLuyen : new DataTable();
+    DataTable tbHocKy = new DataTable();
+    DataTable tbRenLuyen = new DataTable();
+}
+<table border="1" style="border-collapse: collapse" width="100%">
+    <thead>
+    <tr style="text-align:center; background-color:#eee">
+        <th>STT</th>
+        <th>Mã học phần</th>
+        <th>Tên học phần</th>
+        <th>Tín chỉ</th>
+        <th>Loại môn học</th>
+        <th>Điểm</th>
+        <th>Điểm chữ</th>
+        <th>Điểm lần 2</th>
+        <th>Điểm chữ lần 2</th>
+        <th>Kết quả</th>
+        <th>Chi tiết</th>
+    </tr></thead>
+    <tbody>
+    @{
+        if (tbDiem.Rows.Count > 0)
+        {
+            for (int i = 0; i < tbDiem.Rows.Count; i++)
+            {
+                bool isHocKyMoi = false;
+                if (!Namhoc.Equals(tbDiem.Rows[i]["YearStudy"].ToString().Trim()) || !Hocky.Equals(tbDiem.Rows[i]["TermID"].ToString().Trim()))
+                {
+                    Namhoc = tbDiem.Rows[i]["YearStudy"].ToString().Trim();
+                    Hocky = tbDiem.Rows[i]["TermID"].ToString().Trim();
+                    isHocKyMoi = true;
+                    STCDau = 0; STCRot = 0;
+                    <tr>
+                        <td colspan="11" style="background-color: #c7d6f3"><b style="color: blue">Năm học : @Namhoc - Học kỳ : @Hocky</b></td>
+                    </tr>
+                }
+               
+                  <tr>
+                        <td align="center">@(i + 1)</td>
+                        <td align="center">@tbDiem.Rows[i]["CurriculumID"]</td>
+                        <td>@tbDiem.Rows[i]["CurriculumName"]</td>
+                        <td align="center">@tbDiem.Rows[i]["Credits"]</td>
+                        <td align="center">@tbDiem.Rows[i]["CurriculumTypeName"]</td>
+                        <td align="center">@tbDiem.Rows[i]["Mark" + ViewBag.HeDiem]</td>
+                        <td align="center">@tbDiem.Rows[i]["MarkLetter"].ToString()</td>
+                        <td align="center">@(tbDiem.Rows[i]["Mark10_2"].ToString() + " ")</td>
+                        <td align="center">@tbDiem.Rows[i]["MarkLetter_2"].ToString()</td>
+                        <td align="center">@{
+                            if (tbDiem.Rows[i]["isPass"].ToString().Equals("True"))
+                            {
+                                STCDau += (tbDiem.Rows[i]["Credits"].ToString() == "") ? 0 : Convert.ToDecimal(tbDiem.Rows[i]["Credits"].ToString());
+                                <img src="~/Content/images/Dau.png" title="Bạn đã qua môn này" width="15" />
+                            }
+                            else
+                            {
+                                STCRot += (tbDiem.Rows[i]["Credits"].ToString() == "") ? 0 : Convert.ToDecimal(tbDiem.Rows[i]["Credits"].ToString());
+                                <img src="~/Content/images/Rot.png" title="Bạn đã rớt môn này" width="15" />
+                            }
+                        }
+
+                        </td>
+                        <td align="center">
+                            <img src="~/Content/images/detail.png" width="17" style="cursor:pointer" title="click để xem chi tiết" onclick="PopupChiTietDiem('@tbDiem.Rows[i]["CurriculumID"]')" /></td>
+
+                    </tr>
+        
+                if (i < tbDiem.Rows.Count - 1)
+                {
+                    if (!Namhoc.Equals(tbDiem.Rows[i + 1]["YearStudy"].ToString().Trim()) || !Hocky.Equals(tbDiem.Rows[i + 1]["TermID"].ToString().Trim()))
+                    {
+                        DataView dv1 = new DataView(tbTrungBinh, "YearStudy='" + Namhoc + "' and TermID='" + Hocky + "'", "YearStudy,TermID", DataViewRowState.CurrentRows);
+                        tbHocKy = dv1.ToTable();
+                        DataView dv2 = new DataView(tbDiemRenLuyen, "YearStudy='" + Namhoc + "' and TermID='" + Hocky + "'", "YearStudy,TermID", DataViewRowState.CurrentRows);
+                        tbRenLuyen = dv2.ToTable();
+                        
+                        <tr style="font-weight:bold; background-color:#f7eedf">
+                            <td colspan="3">Số tín chỉ đậu (@STCDau)+ Số tín chỉ rớt (@STCRot) = @(STCRot+STCDau)</td>
+                            <td colspan="2">Điểm trung bình : @(tbHocKy.Rows.Count > 0 ? (ViewBag.HeDiem == "10" ? tbHocKy.Rows[0]["AverageScore"] : tbHocKy.Rows[0]["AverageScore4"]) : "")
+                            </td>
+                            <td colspan="2">Điểm rèn luyện : @(tbRenLuyen.Rows.Count>0?tbRenLuyen.Rows[0]["LastScore"]:"")</td>
+                            <td colspan="2">Xếp loại(RL) : @(tbRenLuyen.Rows.Count>0?tbRenLuyen.Rows[0]["BehaviorScoreRank"]:"")</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                   DataView dv1 = new DataView(tbTrungBinh, "YearStudy='" + Namhoc + "' and TermID='" + Hocky + "'", "YearStudy,TermID", DataViewRowState.CurrentRows);
+                    tbHocKy = dv1.ToTable();
+                    DataView dv2 = new DataView(tbDiemRenLuyen, "YearStudy='" + Namhoc + "' and TermID='" + Hocky + "'", "YearStudy,TermID", DataViewRowState.CurrentRows);
+                    tbRenLuyen = dv2.ToTable();
+                        
+                    <tr style="font-weight:bold; background-color:#f7eedf">
+                        <td colspan="3">Số tín chỉ đậu (@STCDau)+ Số tín chỉ rớt (@STCRot) = @(STCRot+STCDau)</td>
+                        <td colspan="2">Điểm trung bình : @(tbHocKy.Rows.Count > 0 ? (ViewBag.HeDiem == "10" ? tbHocKy.Rows[0]["AverageScore"] : tbHocKy.Rows[0]["AverageScore4"]) : "")
+                        </td>
+                        <td colspan="2">Điểm rèn luyện : @(tbRenLuyen.Rows.Count>0?tbRenLuyen.Rows[0]["LastScore"]:"")</td>
+                        <td colspan="2">Xếp loại (RL) : @(tbRenLuyen.Rows.Count>0?tbRenLuyen.Rows[0]["BehaviorScoreRank"]:"")</td>
+                        <td colspan="2"></td>
+                    </tr>
+                }
+
+            }
+        }
+    }
+        </tbody>
+</table>

@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+.wrapper_vb td
+{
+padding:3px;
+}
+.wrapper_vb th
+{
+    text-align:center;
+}
+</style>
+<div class="panel panel-hbu">
+  <div class="panel-heading"><h3 class="panel-title"><strong>Kết quả học tập</strong></h3></div>
+  <div class="panel-body">
+
+<div class="wrapper_vb">
+    <!--Phan mem 4-->
+    <div class="blog_menu4_HP">
+    </div>
+    <div>
+        <table width="100%">
+
+            <tr>
+                <td align="right">Chương trình đào tạo : @Html.DropDownList("StudyProgram", ViewBag.ddlStudyProgram as SelectList, new { style = "width:150px", onchange = "Getketquahoctap()" })</td>
+                <td align="center">Năm học :@Html.DropDownList("YearStudy", ViewBag.ddlYearStudy as SelectList, new { style = "width:100px", onchange = "KiemtrachontatcaNamHoc();Getketquahoctap()" })</td>
+                <td align="left">Học kỳ :@Html.DropDownList("TermID", ViewBag.ddlTermID as SelectList, new { style = "width:100px", onchange = "Getketquahoctap()", disabled = "" })</td>
+                <td align="left">Thang điểm :
+                <select id="Mark" onchange="Getketquahoctap()">
+                    <option value="4">Thang điểm 4</option>
+                    <option value="10">Thang điểm 10</option>
+                </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="7">
+                    <hr />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <script>
+        $(function () {
+            Getketquahoctap();
+        });
+
+    </script>
+    <div id="divHienthiKQHT">
+    </div>
+</div>
+  </div>
+    </div>

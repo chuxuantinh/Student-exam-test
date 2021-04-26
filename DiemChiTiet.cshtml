@@ -1,0 +1,31 @@
+﻿@using System.Data
+@{
+    Layout = "~/Views/Shared/_LayoutNull.cshtml";
+}
+
+    <div>
+        @{
+            DataTable tb = Model != null ? Model as DataTable : new DataTable();
+        }
+        <b>Môn học : @ViewBag.Tenmon</b>
+        <table width="100%" border="1" style="border-collapse:collapse">
+            <tr>
+                <th>STT</th><th>Tên thành phần</th><th>Điểm lần 1</th><th>Điểm lần 2</th>
+            </tr>
+            @{
+                if(tb.Rows.Count>0)
+                {
+                    foreach(DataRow r in tb.Rows)
+                    {
+                          <tr>
+                            <td>@r["OrderNumber"].ToString()</td>
+                            <td>@r["AssignmentName"].ToString()</td>
+                            <td>@r["FirstMark"].ToString()</td>
+                            <td>@r["SecondMark"].ToString()</td>
+                        </tr>
+                    }
+                }
+            }
+          
+        </table>
+    </div>
